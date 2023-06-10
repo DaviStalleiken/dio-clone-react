@@ -1,5 +1,11 @@
 import { styled } from "styled-components";
 
+export const ErrorText = styled.p`
+    color: #ff9900;
+    font-size: 12px;
+    margin-top: 5px 0;
+`
+
 export const InputContainer = styled.div`
     width: 100%;
     max-width: 275%;
