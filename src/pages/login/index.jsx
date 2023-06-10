@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
+import { api } from '../../services/api'
 
 const schema = yup.object({
     email: yup.string().email('email não é válido').required('Campo obrigatório'),
@@ -19,19 +20,23 @@ const Login = () => {
 
     const navigate = useNavigate();
 
-    const { control, handleSubmit, formState: { errors, isValid } } = useForm({
+    const { control, handleSubmit, formState: { errors} } = useForm({
         resolver: yupResolver(schema),
         mode: 'onChange',
     });
 
-    console.log(isValid, errors);
-
-    const onSubmit = data => console.log(data);
-
-
-    const handleClickSignIn = () => {
-        navigate('/feed')
-    }
+    const onSubmit = async formData => {
+        try{
+            const { data } = await api.get(`users?email=${formData.email}&senha=${formData.password}`)
+            if(data.length === 1) {
+                navigate('/feed')
+            } else {
+                alert('Email ou senha inválidos')
+            }
+        }catch{
+            alert('Houve um erro, tente novamente.')
+        }
+    };
 
     return (<>
         <Header />
@@ -49,7 +54,7 @@ const Login = () => {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Input errorMessage={errors?.email?.message} name="email" control={control} placeholder="E-mail" leftIcon={<MdEmail /> }/>
                         <Input errorMessage={errors?.password?.message} name="password" control={control} placeholder="Senha" type="password" leftIcon={<MdLock /> } />
-                        <Button title="Entrar" variant="secondary" onClick={handleClickSignIn} type="submit"/>
+                        <Button title="Entrar" variant="secondary" type="submit"/>
                     </form>
                     <Row>
                         <EsqueciText>Esqueci minha senha</EsqueciText>
