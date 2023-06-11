@@ -3,40 +3,30 @@ import { MdEmail, MdLock } from 'react-icons/md'
 import { Button } from "../../components/Button";
 import { Header } from "../../components/Header";
 import { Input } from '../../components/Input'
-
 import { Column, Container, CriarText, EsqueciText, Row, SubtitleLogin, Title, TitleLogin, Wrapper } from './styles'
-import { useNavigate } from 'react-router-dom';
+
+import { useContext } from 'react';
 import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from "yup";
-import { api } from '../../services/api'
 import { IFormData } from './types';
+import { AuthContext } from '../../context/auth';
 
 const schema = yup.object({
     email: yup.string().email('email não é válido').required('Campo obrigatório'),
     password: yup.string().min(8, 'No mímimo 8 caracteres').required('Campo obrigatório'),
-  }).required();
+}).required();
 
 const Login = () => {
+    const { handleLogin } = useContext(AuthContext);
 
-    const navigate = useNavigate();
-
-    const { control, handleSubmit, formState: { errors} } = useForm<IFormData>({
+    const { control, handleSubmit, formState: { errors } } = useForm<IFormData>({
         resolver: yupResolver(schema),
         mode: 'onChange',
     });
 
     const onSubmit = async (formData: IFormData) => {
-        try{
-            const { data } = await api.get(`users?email=${formData.email}&senha=${formData.password}`)
-            if(data.length === 1) {
-                navigate('/feed')
-            } else {
-                alert('Email ou senha inválidos')
-            }
-        }catch{
-            alert('Houve um erro, tente novamente.')
-        }
+        handleLogin(formData);
     };
 
     return (<>
@@ -53,9 +43,9 @@ const Login = () => {
                     <TitleLogin>Faça seu cadastro</TitleLogin>
                     <SubtitleLogin>Faça seu login e make the change._</SubtitleLogin>
                     <form onSubmit={handleSubmit(onSubmit)}>
-                        <Input errorMessage={errors?.email?.message} name="email" control={control} placeholder="E-mail" leftIcon={<MdEmail /> }/>
-                        <Input errorMessage={errors?.password?.message} name="password" control={control} placeholder="Senha" type="password" leftIcon={<MdLock /> } />
-                        <Button title="Entrar" variant="secondary" type="submit"/>
+                        <Input errorMessage={errors?.email?.message} name="email" control={control} placeholder="E-mail" leftIcon={<MdEmail />} />
+                        <Input errorMessage={errors?.password?.message} name="password" control={control} placeholder="Senha" type="password" leftIcon={<MdLock />} />
+                        <Button title="Entrar" variant="secondary" type="submit" />
                     </form>
                     <Row>
                         <EsqueciText>Esqueci minha senha</EsqueciText>
