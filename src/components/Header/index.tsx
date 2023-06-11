@@ -1,4 +1,3 @@
-import { useContext } from 'react'
 import logo from '../../assets/logo-dio.png'
 import { Button } from '../Button'
 
@@ -12,12 +11,12 @@ import {
   UserPicture,
   Wrapper
 } from './styles';
-import { AuthContext } from '../../context/auth';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 
 const Header = () => {
 
-  const { user, handleSignOut } = useContext(AuthContext);
+  const { user, handleSignOut } = useAuth();
 
   return (
     <Wrapper>
